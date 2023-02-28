@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cloud_connector
+  namespace: flux-system
+data:
+  values.yaml: |
+    connector:
+    enabled: true
+    e4kconnector:
+      kafka:
+        # Port 9093 is Event Hub's Kakfa endpoint
+        endpoint: esetEHns.servicebus.windows.net:9093
+        # Kafka consumer group id prefix
+        # Unique for every route that sinks from Kafka to E4K
+        group_id_prefix: e4kconnector
+        # Interval to commit consumer reading offset position to Kafka broker
+        auto_commit_interval_ms: 5000
+        listener:
+          # Event Hub uses SSL
+          type: ssl
+          # Event Hub uses SASL PLAIN authentication for its Kafka-compatible endpoint
+          sasl:
+            sasl_type: plain
+            #secret_name: my-eh-secret
+            username: $ConnectionString
+            password: Endpoint=sb://esetehns.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=F0dyR+PlPTNaBQQ8qo/ojuJDL5xPiELk8+AEhE8tYYw=
+      topicMap:
+        configYaml:
+          route:
+            # Pull from MQTT topic "temperature-alerts" and push to Kafka topic "<RECEIVING_EH_NAME>"
+            # Default partition 0 only
+            - kafka: kafka_receiving
+              mqtt: temperature-alerts
+              sink_to: kafka
+            # Pull from kafka topic "<SENDING_EH_NAME>" and push to MQTT topic "heater-commands"
+            # Default partition 0 only
+            - kafka: kafka_sending
+              mqtt: heater-commands
+              sink_to: mqtt
