@@ -27,4 +27,4 @@ spec:
   interval: 1m0s
   valuesFrom:
   - kind: ConfigMap
-    name: cloud_connector
+    name: cloud-connector
