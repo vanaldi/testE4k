@@ -25,6 +25,6 @@ spec:
         name: e4k-repo
       version: 0.2.0
   interval: 1m0s
-#  valuesFrom:
-#  - kind: ConfigMap
-#    name: cloud-connector
+  valuesFrom:
+  - kind: ConfigMap
+    name: cloud-connector
